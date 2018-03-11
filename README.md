@@ -62,3 +62,20 @@ This project is an implementation of  Chinese SM4 (also known as sms4) encryptio
 }
 ```
 
+## FPGA resource utilization
+
+![utilization](Documents/images/utilization.png)
+
+
+
+## FPGA  Power Report
+
+![power](Documents/images/power.png)
+
+
+
+## FPGA Timing Report
+
+The period of clock is set to 2ns.
+
+![timing_report](Documents/images/timing_report.png)
