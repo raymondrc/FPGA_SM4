@@ -23,6 +23,7 @@ module sm4_top(
     reset_n	            ,
     sm4_enable_in       ,
     encdec_enable_in    ,
+    encdec_sel_in       ,
     valid_in            ,
     data_in             ,
     enable_key_exp_in   ,
@@ -37,6 +38,7 @@ module sm4_top(
     input			 reset_n	        ;
     input            sm4_enable_in      ;
     input            encdec_enable_in   ;
+    input            encdec_sel_in      ;
     input            valid_in           ;
     input   [127: 0] data_in            ;
     input            enable_key_exp_in  ;
@@ -128,6 +130,7 @@ module sm4_top(
         .clk					(clk					),
         .reset_n				(reset_n				),
         .sm4_enable_in		    (sm4_enable_in		    ),
+        .encdec_sel_in		    (encdec_sel_in		    ),
         .enable_key_exp_in	    (enable_key_exp_in	    ),
         .user_key_in			(user_key_in			),
         .user_key_valid_in	    (user_key_valid_in	    ),

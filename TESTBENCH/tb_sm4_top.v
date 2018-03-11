@@ -6,6 +6,7 @@ module tb_sm4_top();
     reg			    reset_n	            ;
     reg             sm4_enable_in       ;
     reg             encdec_enable_in    ;
+    reg             encdec_sel_in       ;
     reg             valid_in            ;
     reg   [127: 0]  data_in             ;
     reg             enable_key_exp_in   ;
@@ -25,6 +26,7 @@ module tb_sm4_top();
             reset_n	            = 0;
             sm4_enable_in       = 0;
             encdec_enable_in    = 0;
+            encdec_sel_in       = 0;
             valid_in            = 0;
             data_in             = 0;
             enable_key_exp_in   = 0;
@@ -53,39 +55,86 @@ module tb_sm4_top();
             end
             @(posedge clk) valid_in = 1'b0;
             wait(ready_out);
-            #200;
+            #300;
+            sm4_enable_in       = 0;
+            encdec_enable_in    = 0;
+            encdec_sel_in       = 0;
+            valid_in            = 0;
+            data_in             = 0;
+            enable_key_exp_in   = 0;
+            user_key_valid_in   = 0;
+            user_key_in         = 0;
+            #111;
+            sm4_enable_in       = 1;
+            #111;
+            encdec_sel_in       = 1;
+            enable_key_exp_in   = 1;
+            #111;
+            @(posedge clk)
+            begin
+            user_key_valid_in = 1'b1;
+            user_key_in       = 128'h0123456789abcdeffedcba9876543210;
+            end
+            wait(key_exp_ready_out);
+            #111;
+            encdec_enable_in = 1;
+            #111;
+            @(posedge clk)
+            begin
+            valid_in = 1'b1;
+            data_in = 128'h681edf34d206965e86b3e94f536e4246;
+            end
+            #300;
             $finish;
         end
       
+      
+      
+    always@(*)        
+        if(~encdec_sel_in)
+            $display("Test of Encryption....\n");
+        else
+            $display("Test of Decryption....\n");
+            
+            
     always@(*)                
-        if(ready_out)
+        if(valid_in)
+            $display("Input Data: %h\n", data_in); 
+
+            
+    always@(*)                
+        if(~encdec_sel_in && ready_out)
             begin
-                $display("expected result is 128'h681edf34d206965e86b3e94f536e4246");
+                $display("Expected encryption result: 128'h681edf34d206965e86b3e94f536e4246");
+                $display("Actual   encryption result: %h", result_out);
                 if(result_out == 128'h681edf34d206965e86b3e94f536e4246 )
-                    $display("Encryption results is correct!! The same as expected result!\n");
+                        $display("Correct! The same as the expected!\n");
                 else
                     begin
                         $display("Error!\n");
-                        $display("ciphertext is %h\n", result_out);
                     end
             end
             
     always@(*)                
-        if(valid_in)
-            $display("plaintext is %h\n", data_in);            
+        if(encdec_sel_in && ready_out)
+            begin
+                $display("Expected decryption result: 128'h0123456789abcdeffedcba9876543210");
+                $display("Actual   decryption result: %h", result_out);
+                if(result_out == 128'h0123456789abcdeffedcba9876543210 )
+                        $display("Correct! The same as the expected!\n");
+                else
+                    begin
+                        $display("Error!\n");
+                    end
+            end           
             
-
-
-
-
-
-
           
     sm4_top uut(
         .clk		         (clk		        ),
         .reset_n	         (reset_n	        ),
         .sm4_enable_in       (sm4_enable_in     ),
         .encdec_enable_in    (encdec_enable_in  ),
+        .encdec_sel_in       (encdec_sel_in     ),
         .valid_in            (valid_in          ),
         .data_in             (data_in           ),
         .enable_key_exp_in   (enable_key_exp_in ),

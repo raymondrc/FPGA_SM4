@@ -27,6 +27,7 @@ module tb_key_expansion(
 reg   clk                   ;
 reg   reset_n               ;
 reg   sm4_enable_in         ;
+reg   encdec_sel_in         ;
 reg   enable_key_exp_in     ;
 reg   user_key_valid_in     ;
 reg   [127: 0] user_key_in  ;
@@ -73,6 +74,7 @@ initial
         reset_n             = 1'b0 ;
         sm4_enable_in		= 1'b0 ;
         enable_key_exp_in   = 1'b0 ; 
+        encdec_sel_in       = 1'b0;
         user_key_in         = 128'h0 ;
         user_key_valid_in   = 1'b0 ;
         #100;
@@ -93,7 +95,33 @@ initial
                 end
 
         wait(key_exp_finished_out);
+        #200;
+        reset_n             = 1'b0 ;
+        sm4_enable_in		= 1'b0 ;
+        enable_key_exp_in   = 1'b0 ; 
+        encdec_sel_in       = 1'b1;
+        user_key_in         = 128'h0 ;
+        user_key_valid_in   = 1'b0 ;
         #100;
+        @(posedge clk) reset_n             = 1'b1 ;
+        @(posedge clk) sm4_enable_in       = 1'b1 ;
+        #100;
+        @(posedge clk) #1 enable_key_exp_in   = 1'b1 ;
+        #222;
+        @(posedge clk)
+        begin
+            user_key_valid_in = 1'b1;
+            user_key_in       = 128'h0123456789abcdeffedcba9876543210;
+        end
+        @(posedge clk)
+                begin
+                    user_key_valid_in = 1'b0;
+                    user_key_in       = 128'h0;
+                end
+
+        wait(key_exp_finished_out);
+        #200;
+        
         $finish;
     end
         
@@ -104,6 +132,7 @@ key_expansion uut
         .clk				    (clk				    ),
         .reset_n			    (reset_n			    ),
         .sm4_enable_in		    (sm4_enable_in		    ),
+        .encdec_sel_in		    (encdec_sel_in		    ),
         .enable_key_exp_in	    (enable_key_exp_in	    ),
         .user_key_in		    (user_key_in		    ),
         .user_key_valid_in	    (user_key_valid_in	    ),
