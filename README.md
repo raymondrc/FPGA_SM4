@@ -2,8 +2,16 @@
 
 ## Introduction
 
-This core is an implementation of  Chinese SM4 (also known as sms4) encryption algorithm. 
-Key expansion, encryption and decryption algorithms are supported.
+This project is an implementation of  Chinese SM4 (also known as sms4) encryption algorithm. 
+
+### Features
+
+- Pipeline architecture,
+- 128-bit datapath,
+- following algorithms are supported:
+  * key expansion
+  * Encryption
+  * Decryption
 
 ## Architecture
 
